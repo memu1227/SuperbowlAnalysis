@@ -52,3 +52,31 @@ sp2024_lineup <- select(spbwl, Winner,Winner.Pts, Loser,Loser.Pts) %>%
         Loser == "Kansas City Chiefs" |
         Loser == "San Francisco 49ers")
 
+#convert winner and loser points to numeric
+sp2024_lineup$Winner.Pts <- as.numeric(sp2024_lineup$Winner.Pts)
+sp2024_lineup$Loser.Pts <- as.numeric(sp2024_lineup$Loser.Pts)
+
+chief_avg <- sp2024_lineup %>%
+    filter(Winner == "Kansas City Chiefs") %>%
+    summarise("Average Winning Score" = mean(Winner.Pts),"Max Score" = max(Winner.Pts),"Min Score" = min(Winner.Pts), "Avg Score Difference" = mean((Winner.Pts-Loser.Pts)))
+
+sf_avg <- sp2024_lineup %>%
+    filter(Winner == "San Francisco 49ers") %>%
+    summarise("Average Winning Score" = mean(Winner.Pts),"Max Score" = max(Winner.Pts),"Min Score" = min(Winner.Pts),"Avg Score Difference" = mean((Winner.Pts-Loser.Pts)))
+
+chiefs_sf <- select(spbwl, Date, Winner, Winner.Pts,Loser,Loser.Pts) %>%
+    filter(((Winner == "Kansas City Chiefs") & (Loser == "San Francisco 49ers")) | 
+        ((Loser == "Kansas City Chiefs") & (Winner == "San Francisco 49ers")))
+
+#combine chiefs and niners stats into one dataframe
+# add name of team as a column
+chief_avg <- chief_avg %>% 
+    mutate(Team = "Chiefs")
+
+sf_avg <- sf_avg %>%
+    mutate(Team = "49ers")
+
+sb_pred <- full_join(chief_avg,sf_avg) %>%
+    select("Team",everything())
+
+
