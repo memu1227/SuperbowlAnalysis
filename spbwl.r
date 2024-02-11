@@ -231,26 +231,35 @@ niners$Outcome <- ifelse(niners$Winner == "49ers", "Win", "Lose")
 # Combine the datasets
 combined_data <- rbind(chiefs, niners)
 
-# Train a decision tree model without 'Turf' and 'Season'
-tree_model <- rpart(Winner_Pts - Loser_Pts ~ Winner_Pts + Loser_Pts, data = combined_data)
+# Filter data for when the Chiefs won
+chiefs_wins <- combined_data[combined_data$Winner == "Chiefs", ]
 
-# Plot the decision tree
-plot(tree_model)
-text(tree_model)
+# Filter data for when the 49ers won
+niners_wins <- combined_data[combined_data$Winner == "49ers", ]
+
+# Combine the datasets for Chiefs' and 49ers' wins
+combined_wins_data <- rbind(chiefs_wins, niners_wins)
+
+# Train a decision tree model using the combined wins data
+tree_model_wins <- rpart(Winner_Pts - Loser_Pts ~ Winner_Pts + Loser_Pts, data = combined_wins_data)
+
+# Plot the decision tree for wins
+plot(tree_model_wins)
+text(tree_model_wins)
 
 # Create real data for a hypothetical matchup
-hypothetical_data <- data.frame(
-    Winner_Pts = c(31),  # Fill in with real values
-    Loser_Pts = c(20)    # Fill in with real values
+hypothetical_data_wins <- data.frame(
+    Winner_Pts = c(31),  
+    Loser_Pts = c(20)    
 )
 
-# Make predictions on the hypothetical matchup
-predicted_margin <- predict(tree_model, newdata = hypothetical_data)
+# Make predictions on the hypothetical matchup for wins
+predicted_margin_wins <- predict(tree_model_wins, newdata = hypothetical_data_wins)
 
-# Determine the winner based on the predicted margin
-predicted_winner <- ifelse(predicted_margin > 0, "Chiefs", "49ers")
-predicted_margin <- abs(predicted_margin)
+# Determine the winner based on the predicted margin for wins
+predicted_winner_wins <- ifelse(predicted_margin_wins > 0, "Chiefs", "49ers")
+predicted_margin_wins <- abs(predicted_margin_wins)
 
-# Display the predicted outcome
-print(paste("Predicted Winner:", predicted_winner))
-print(paste("Predicted Margin of Victory:", predicted_margin))
+# Display the predicted outcome for wins
+print(paste("Predicted Winner for Wins:", predicted_winner_wins))
+print(paste("Predicted Margin of Victory for Wins:", predicted_margin_wins))
